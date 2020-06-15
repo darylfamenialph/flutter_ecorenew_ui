@@ -19,7 +19,7 @@ class DashboardPage extends StatefulWidget{
   _DashboardPageState createState() => _DashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserver{
   List<UserData> _userData;
 
    Future<List<UserData>> fetchUserData() async{
@@ -171,6 +171,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   void initState(){
+    WidgetsBinding.instance.addObserver(this);
      _checkInternetConnectivity();
    _getUserData();
     super.initState();
@@ -178,8 +179,18 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   void dispose(){
+    WidgetsBinding.instance.removeObserver(this);
     _subscription.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state){
+    print('state = $state');
+    if(state == AppLifecycleState.resumed){
+      _checkInternetConnectivity(); 
+    }
+    //_checkInternetConnectivity(); 
   }
 
   @override

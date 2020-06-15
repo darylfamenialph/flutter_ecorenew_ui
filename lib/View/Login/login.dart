@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:ecorenew_ui/Utilities/size_preferences.dart';
 import 'package:ecorenew_ui/View/Common/concave_decorator.dart';
@@ -9,13 +8,14 @@ import 'package:ecorenew_ui/View/Common/neumorph.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ecorenew_ui/Utilities/api_preferences.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 class LoginPage extends StatefulWidget{
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
   Future validateEmail(String email) async{
     try 
@@ -126,16 +126,27 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   
-   @override
+  @override
   void initState(){
+    WidgetsBinding.instance.addObserver(this);
    _checkInternetConnectivity();
     super.initState();
   }
 
   @override
   void dispose(){
+    WidgetsBinding.instance.removeObserver(this);
     _subscription.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state){
+    print('state = $state');
+    if(state == AppLifecycleState.resumed){
+      _checkInternetConnectivity(); 
+    }
+    //_checkInternetConnectivity(); 
   }
 
   @override
